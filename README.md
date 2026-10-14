@@ -10,7 +10,7 @@ Sales Navigator page → YC + fit check (one slow, read-only research agent) →
 |---|---|
 | `/prospect-yc` | ✅ v0.1 |
 | `/prospect-newhires` | planned |
-| `/prospect-funding` | planned (no LinkedIn needed) |
+| `/prospect-funding` | ✅ v0.1 — FinSMEs; targeting in `funding/criteria.json`, sources in `funding/sources.json` |
 
 ## What each rep needs
 - Claude Code (desktop app or CLI) with these connectors signed in **as themselves**: HubSpot, Nooks, Apollo, Slack, and Claude in Chrome.

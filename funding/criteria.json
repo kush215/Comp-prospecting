@@ -1,0 +1,16 @@
+{
+  "_comment": "Team-wide targeting for /prospect-funding. Edit here (and push) to change it for everyone. A rep can still override per run in chat.",
+  "lookback_days": 3,
+  "rounds_include": ["Pre-Seed", "Seed", "Series A", "Series B", "Funding (unspecified)"],
+  "rounds_exclude": ["Series C", "Series D", "Series E", "Series F", "Growth", "Debt", "Credit Facility", "Grant", "Acquisition"],
+  "min_amount_usd": 2000000,
+  "max_amount_usd": 150000000,
+  "geographies_include": ["USA", "Canada", "UK", "Ireland", "Europe", "Israel"],
+  "fit_include": "B2B software / SaaS / AI / data / devtools / security / fintech / healthtech software / HR / insurtech / legaltech selling to businesses that will face SOC 2 / ISO 27001 / HIPAA / GDPR reviews",
+  "fit_exclude": "Biotech, therapeutics, drug discovery, medical devices, pure hardware, energy/climate hardware, consumer apps, consumer goods, restaurants, real estate funds, crypto tokens, VC funds, services/agencies",
+  "max_companies_per_run": 15,
+  "contacts_per_company": {
+    "titles_priority": ["CEO", "Co-Founder", "Founder", "CTO", "Head of Security", "CISO", "VP Engineering"],
+    "max": 2
+  }
+}

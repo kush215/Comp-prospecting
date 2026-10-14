@@ -1,0 +1,13 @@
+{
+  "_comment": "Funding sources read by /prospect-funding. Add more entries as the team finds them; each needs a matching section in skills/prospect-funding/references/sources.md.",
+  "sources": [
+    {
+      "id": "finsmes",
+      "name": "FinSMEs",
+      "type": "website_in_browser",
+      "url": "https://www.finsmes.com/",
+      "daily_archive": "https://www.finsmes.com/{YYYY}/{MM}/{DD}/page/{N}",
+      "notes": "Cloudflare-protected: script fetches and /feed return 403. Read in the rep's Chrome only. Articles include HQ, description, round, amount, lead investor, CEO name, and a link to the company website."
+    }
+  ]
+}
