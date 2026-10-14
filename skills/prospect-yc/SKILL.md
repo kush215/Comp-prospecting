@@ -75,8 +75,10 @@ Unowned companies are fine.
 
 Qualified = YC verdict **Match** AND fit **Hot/Strong**.
 
+**Go wide at each qualified company.** The Sales Nav lead is the starting point, not the only target. For every qualified company, also run Apollo `apollo_mixed_people_api_search` on the company domain with the titles in `targeting/titles.json` (other co-founders, CTO, security / compliance / GRC, engineering, IT, ops, legal), drop `exclude_title_keywords`, and add up to `max_contacts_per_company.yc` (default 4) people total following `pick_order`. Use the YC directory's founder list too. Mark these as "added from Apollo" in the report.
+
 1. `apollo_people_bulk_match` (≤10 per call) with first/last name, company, domain. Accept `email_status: verified`. If the email is on a different domain than the company site, keep it but note it. If Apollo returns a different current employer's email, drop the lead (no email).
-2. Person-level dedupe: search HubSpot contacts by email and by last name; `listProspects` in Nooks by `filter_primaryEmail` with `include: sequenceStates`. **Exclude only if this person** already exists with an owner other than the rep, has recent activity (`notes_last_contacted`), is an opportunity/customer, or has any Nooks sequence state.
+2. Person-level dedupe: search HubSpot contacts by email and by last name; `listProspects` in Nooks by `filter_primaryEmail` with `include: sequenceStates`. **Exclude only if this person** already exists with an owner other than the rep, has recent activity (`notes_last_contacted`), is an opportunity/customer, or has any Nooks sequence state. A colleague at the same company already being worked by the rep is **not** a reason to skip someone new — multiple people per company is intended.
 
 ## 6. Compliance scan → HubSpot
 

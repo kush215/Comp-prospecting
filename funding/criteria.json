@@ -25,14 +25,5 @@
   "fit_medium": "B2B companies with a software component that will still face customer security reviews: marketplaces, tech-enabled services, B2B hardware with a cloud/data platform, edtech selling to schools or companies",
   "fit_exclude": "Biotech, therapeutics, drug discovery, medical devices, pure hardware with no software platform, energy/climate hardware, consumer apps, consumer goods, restaurants, real estate funds, crypto tokens, VC funds, services/agencies with no product",
   "max_companies_per_run": 15,
-  "contacts_per_company": {
-    "max": 3,
-    "titles": [
-      "Founder", "Co-Founder", "CEO", "CTO", "COO",
-      "CISO", "Head of Security", "VP Security", "Director of Security", "Security Engineer", "Security Lead", "Information Security",
-      "Head of Compliance", "Compliance Manager", "Compliance Lead", "Compliance Officer", "GRC", "Governance Risk Compliance",
-      "Head of IT", "IT Manager", "VP Engineering", "Head of Engineering"
-    ],
-    "pick_order": "1) a founder/co-founder/CEO, 2) the most senior security or compliance person, 3) CTO/engineering or IT lead if no security/compliance person exists"
-  }
+  "contacts_per_company": "see targeting/titles.json (shared by all plays)"
 }

@@ -1,0 +1,22 @@
+{
+  "_comment": "Team-wide buyer titles used by every play to find ADDITIONAL contacts at a qualified company. Edit here to change it for everyone.",
+  "titles": [
+    "Founder", "Co-Founder", "CEO", "President", "CTO", "COO", "CFO",
+    "CISO", "Chief Security Officer", "Head of Security", "VP Security", "Director of Security", "Security Engineer", "Security Lead", "Information Security", "Security Operations",
+    "Head of Compliance", "Compliance Manager", "Compliance Lead", "Compliance Officer", "Compliance Analyst", "GRC", "Governance Risk Compliance", "Risk Manager", "Privacy Officer", "Data Protection Officer",
+    "Head of IT", "IT Manager", "IT Director", "Systems Administrator",
+    "VP Engineering", "Head of Engineering", "Engineering Manager", "Head of Infrastructure", "DevOps Lead", "Platform Lead",
+    "Head of Operations", "VP Operations", "Head of Legal", "General Counsel"
+  ],
+  "exclude_title_keywords": ["Intern", "Assistant", "Student", "Advisor", "Board", "Investor", "Former", "Ex-"],
+  "max_contacts_per_company": {
+    "yc": 4,
+    "funding": 5
+  },
+  "pick_order": [
+    "Every founder / co-founder / CEO",
+    "The most senior security or compliance person (CISO, Head of Security, Compliance Manager, GRC, Security Engineer)",
+    "CTO / VP or Head of Engineering",
+    "IT, operations, legal or finance leads (only if slots remain)"
+  ]
+}

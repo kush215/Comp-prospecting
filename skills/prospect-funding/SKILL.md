@@ -46,9 +46,9 @@ Same as YC: search companies by domain and name, deals by name. Exclude if lifec
 
 ## 4. Find contacts → emails → person dedupe
 
-1. For each company, Apollo `apollo_mixed_people_api_search` with the company domain and `contacts_per_company.titles` (founders/co-founders, CEO, CTO, plus any security, compliance, GRC or IT title — e.g. Compliance Manager, Security Engineer, CISO). Prefer people named in the article. Pick up to `contacts_per_company.max` (default 3) following `pick_order`: a founder/CEO, the most senior security/compliance person, then CTO/engineering/IT if there's no security/compliance person.
+1. **Go wide at every qualified company — multiple people per company is the goal.** Finding the CEO in the article does not mean you're done. Apollo `apollo_mixed_people_api_search` with the company domain and the titles in `targeting/titles.json` (founders/co-founders, CEO, CTO, security, compliance, GRC, IT, engineering, ops, legal). Drop titles matching `exclude_title_keywords`. Include the people named in the article. Pick up to `max_contacts_per_company.funding` (default 5) following `pick_order`: every founder/co-founder/CEO, then the most senior security/compliance person, then CTO/engineering, then IT/ops/legal/finance if slots remain. Recently funded companies are the highest priority to fill all slots.
 2. `apollo_people_bulk_match` (≤10 per call) for emails. Accept `verified`. Drop anyone whose email is at a different current employer.
-3. Person-level dedupe exactly as in YC: HubSpot contact by email/last name, Nooks `listProspects filter_primaryEmail` with `sequenceStates`. Exclude only if **this person** is owned by another rep, recently contacted, an opportunity/customer, or already in a Nooks sequence.
+3. Person-level dedupe exactly as in YC: HubSpot contact by email/last name, Nooks `listProspects filter_primaryEmail` with `sequenceStates`. Exclude only if **this person** is owned by another rep, recently contacted, an opportunity/customer, or already in a Nooks sequence. **Colleagues already being worked by the rep do not block a new person at the same company** — a company already in a sequence is not a reason to skip someone new there.
 
 ## 5. Compliance scan → HubSpot company
 
