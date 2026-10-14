@@ -28,6 +28,14 @@ From this folder or the team's Git repo:
 
 Then say **"prospect YC"**. The first run walks through setup and writes `~/.comp-prospecting/config.json` (see `config.example.json`).
 
+## Talking to it
+Your config sets defaults; just say what you want differently for a run:
+- "prospect YC page 30 and put them in **YC Fintech Q4**"
+- "next page, dry run — show me who you'd enroll first"
+- "only the first 10 leads, include Medium fits"
+- "skip Acme, start everyone on step 2, schedule for Monday 9am"
+- "make **YC V2** my default sequence"
+
 ## Safety rules (enforced by the skill)
 - LinkedIn is read-only; one tab; 15–25s between profile loads; one Sales Nav page per run; daily cap on profile views (default 50).
 - Stops on any CAPTCHA / checkpoint / unusual-activity page.
