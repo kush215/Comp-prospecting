@@ -1,15 +1,15 @@
 {
-  "rep_name": "Kush Sarin",
-  "rep_email": "kush@trycomp.ai",
-  "hubspot_owner_id": "168517645",
-  "nooks_user_id": "98dESWTEglPJuPHEurJSH1tQ0CG3",
+  "rep_name": "Your Name",
+  "rep_email": "you@trycomp.ai",
+  "hubspot_owner_id": "YOUR_HUBSPOT_OWNER_ID",
+  "nooks_user_id": "YOUR_NOOKS_USER_ID",
   "sequences": {
-    "yc": "a1792103-9875-4b55-9af4-4634960c4625"
+    "yc": "YOUR_NOOKS_YC_SEQUENCE_ID"
   },
-  "salesnav_yc_search_url": "https://www.linkedin.com/sales/search/people?query=(filters%3AList((type%3ACURRENT_TITLE%2Cvalues%3AList((id%3A153%2Ctext%3AChief%2520Technology%2520Officer%2CselectionType%3AINCLUDED)%2C(id%3A103%2Ctext%3ACo-Founder%2CselectionType%3AINCLUDED)%2C(id%3A35%2Ctext%3AFounder%2CselectionType%3AINCLUDED)))%2C(type%3ASCHOOL%2Cvalues%3AList((id%3A167872%2Ctext%3AY%2520Combinator%2CselectionType%3AINCLUDED)))%2C(type%3ALEAD_INTERACTIONS%2Cvalues%3AList((id%3ALIVP%2Ctext%3AViewed%2520profile%2CselectionType%3AEXCLUDED)))))&savedSearchId=2000677716&viewAllFilters=true",
+  "salesnav_yc_search_url": "PASTE_YOUR_SALES_NAV_YC_SAVED_SEARCH_URL",
   "scanner_channel_id": "C0C4089MGCR",
   "scanner_bot_id": "U0C40BHTG1F",
   "exclude_owner_ids": [],
   "daily_profile_view_cap": 50,
-  "last_page_done": 23
+  "last_page_done": 0
 }
