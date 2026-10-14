@@ -1,16 +1,38 @@
 {
   "_comment": "Team-wide targeting for /prospect-funding. Edit here (and push) to change it for everyone. A rep can still override per run in chat.",
   "lookback_days": 3,
-  "rounds_include": ["Pre-Seed", "Seed", "Series A", "Series B", "Funding (unspecified)"],
-  "rounds_exclude": ["Series C", "Series D", "Series E", "Series F", "Growth", "Debt", "Credit Facility", "Grant", "Acquisition"],
-  "min_amount_usd": 2000000,
-  "max_amount_usd": 150000000,
-  "geographies_include": ["USA", "Canada", "UK", "Ireland", "Europe", "Israel"],
-  "fit_include": "B2B software / SaaS / AI / data / devtools / security / fintech / healthtech software / HR / insurtech / legaltech selling to businesses that will face SOC 2 / ISO 27001 / HIPAA / GDPR reviews",
-  "fit_exclude": "Biotech, therapeutics, drug discovery, medical devices, pure hardware, energy/climate hardware, consumer apps, consumer goods, restaurants, real estate funds, crypto tokens, VC funds, services/agencies",
+  "rounds_include": ["Pre-Seed", "Seed", "Series A", "Series B", "Series C", "Funding (unspecified)"],
+  "rounds_exclude": ["Series D", "Series E", "Series F", "Growth", "Debt", "Credit Facility", "Grant", "Acquisition"],
+  "sequences_by_round": {
+    "Pre-Seed": { "name": "Seed Funding V2", "id": "5632c6e8-bada-4978-9234-063bfcbb1879" },
+    "Seed": { "name": "Seed Funding V2", "id": "5632c6e8-bada-4978-9234-063bfcbb1879" },
+    "Series A": { "name": "Series A Funding V2", "id": "0bb5a1b7-7f83-4344-976c-5816ddad5000" },
+    "Series B": { "name": "Series B Funding V2", "id": "fb71dac3-5bde-4ce2-9abc-3c9133aeb2b4" },
+    "Series C": { "name": "Series C funding", "id": "cfd9b9f4-dc78-4314-8eb0-8d9d6dbd6e3c" }
+  },
+  "unspecified_round_by_amount_usd": [
+    { "max": 5000000, "round": "Seed" },
+    { "max": 25000000, "round": "Series A" },
+    { "max": 75000000, "round": "Series B" },
+    { "max": 200000000, "round": "Series C" }
+  ],
+  "min_amount_usd": 1000000,
+  "max_amount_usd": 200000000,
+  "geographies_include": ["USA"],
+  "fit_tiers_include": ["Hot", "Strong", "Medium"],
+  "fit_hot": "B2B software selling to enterprise or regulated buyers: fintech, healthtech software, HR/payroll, security, data/AI infrastructure, insurtech, legaltech, govtech",
+  "fit_strong": "Other B2B SaaS / AI / devtools / vertical software selling to businesses",
+  "fit_medium": "B2B companies with a software component that will still face customer security reviews: marketplaces, tech-enabled services, B2B hardware with a cloud/data platform, edtech selling to schools or companies",
+  "fit_exclude": "Biotech, therapeutics, drug discovery, medical devices, pure hardware with no software platform, energy/climate hardware, consumer apps, consumer goods, restaurants, real estate funds, crypto tokens, VC funds, services/agencies with no product",
   "max_companies_per_run": 15,
   "contacts_per_company": {
-    "titles_priority": ["CEO", "Co-Founder", "Founder", "CTO", "Head of Security", "CISO", "VP Engineering"],
-    "max": 2
+    "max": 3,
+    "titles": [
+      "Founder", "Co-Founder", "CEO", "CTO", "COO",
+      "CISO", "Head of Security", "VP Security", "Director of Security", "Security Engineer", "Security Lead", "Information Security",
+      "Head of Compliance", "Compliance Manager", "Compliance Lead", "Compliance Officer", "GRC", "Governance Risk Compliance",
+      "Head of IT", "IT Manager", "VP Engineering", "Head of Engineering"
+    ],
+    "pick_order": "1) a founder/co-founder/CEO, 2) the most senior security or compliance person, 3) CTO/engineering or IT lead if no security/compliance person exists"
   }
 }

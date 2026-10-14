@@ -11,7 +11,7 @@ Comp AI sells compliance automation (SOC 2, ISO 27001, HIPAA, GDPR). Competitors
 
 ## 0. Setup and guardrails
 
-1. Read `~/.comp-prospecting/config.json`. If missing, follow `../prospect-yc/references/setup.md` first. If `sequences.funding` is missing, ask the rep which Nooks sequence funding leads go into (resolve with `listSequences`), save it, and continue.
+1. Read `~/.comp-prospecting/config.json`. If missing, follow `../prospect-yc/references/setup.md` first. Funding sequences are **team-wide, chosen by round** (`criteria.json → sequences_by_round`), so no per-rep sequence is needed.
 2. Read team settings from the plugin repo: `funding/criteria.json` and `funding/sources.json`.
 3. Read `~/.comp-prospecting/funding-seen.json` (create `{"days_done": [], "companies": {}}` if missing). `companies` maps domain → `{date, outcome}`; skip any domain processed in the last 90 days.
 4. Hard rules:
@@ -31,12 +31,14 @@ For each source in `sources.json`, follow its section in `references/sources.md`
 
 Keep a company only if all hold:
 - round type in `rounds_include` and not in `rounds_exclude`
-- amount within `min_amount_usd`–`max_amount_usd` (keep "undisclosed" only if it's otherwise a strong fit)
-- HQ in `geographies_include`
-- description matches `fit_include` and not `fit_exclude` — score **Hot** (sells to enterprise/regulated buyers: fintech, health, HR, security, data/AI infra, insurance, legal) / **Strong** (other B2B software) / drop the rest
+- amount within `min_amount_usd`–`max_amount_usd` (keep "undisclosed" only if it's otherwise Hot/Strong)
+- HQ in `geographies_include` (currently **USA only** — the article's "X-based" city/state must be in the US)
+- fit tier is in `fit_tiers_include`: score **Hot** (`fit_hot`), **Strong** (`fit_strong`), **Medium** (`fit_medium`); drop anything matching `fit_exclude`
 - domain not in `funding-seen.json` within 90 days
 
-Cap at `max_companies_per_run`, Hot first.
+**Normalize the round** to one of the keys in `sequences_by_round`: "Pre-Seed"/"Seed"/"Series A"/"Series B"/"Series C" as stated. If the article says only "funding"/"investment" with no series, infer the round from the amount using `unspecified_round_by_amount_usd` and mark it `(inferred)` in the report. If the amount is also undisclosed, ask the rep or skip.
+
+Cap at `max_companies_per_run`, Hot first, then Strong, then Medium.
 
 ## 3. Company-level blockers (HubSpot)
 
@@ -44,7 +46,7 @@ Same as YC: search companies by domain and name, deals by name. Exclude if lifec
 
 ## 4. Find contacts → emails → person dedupe
 
-1. For each company, Apollo `apollo_mixed_people_api_search` with the company domain and `titles_priority` (CEO, Co-Founder, Founder, CTO, Head of Security, CISO, VP Engineering). Prefer people named in the article. Take up to `contacts_per_company.max` (default 2: CEO/founder + CTO or security lead).
+1. For each company, Apollo `apollo_mixed_people_api_search` with the company domain and `contacts_per_company.titles` (founders/co-founders, CEO, CTO, plus any security, compliance, GRC or IT title — e.g. Compliance Manager, Security Engineer, CISO). Prefer people named in the article. Pick up to `contacts_per_company.max` (default 3) following `pick_order`: a founder/CEO, the most senior security/compliance person, then CTO/engineering/IT if there's no security/compliance person.
 2. `apollo_people_bulk_match` (≤10 per call) for emails. Accept `verified`. Drop anyone whose email is at a different current employer.
 3. Person-level dedupe exactly as in YC: HubSpot contact by email/last name, Nooks `listProspects filter_primaryEmail` with `sequenceStates`. Exclude only if **this person** is owned by another rep, recently contacted, an opportunity/customer, or already in a Nooks sequence.
 
@@ -59,9 +61,9 @@ Run the scanner and write `compliance_tool` + `compliance_scanner_summary` exact
 
 1. Create HubSpot contacts (≤10 per call) with `hubspot_owner_id = config.hubspot_owner_id`, lifecycle `lead`, email, title, company, website, LinkedIn URL if Apollo has it.
 2. Make sure the scanner fields are on the company HubSpot associated (email domain may differ from the site).
-3. Nooks `syncProspects` → `createSequenceState` with the run's sequence (default `config.sequences.funding`), `owner = config.nooks_user_id`, `enrich: {emails: true, phoneNumbers: true}`.
+3. Nooks `syncProspects` → `createSequenceState` with the sequence for the company's **round** (`sequences_by_round[round].id`, e.g. Seed → Seed Funding V2, Series A → Series A Funding V2, Series B → Series B Funding V2, Series C → Series C funding) unless the rep named a different sequence for this run; `owner = config.nooks_user_id`, `enrich: {emails: true, phoneNumbers: true}`. If a sequence id fails, re-resolve it by name with `listSequences` and tell the rep.
 
 ## 7. Report and save state
 
 - Add each processed domain to `funding-seen.json → companies` with today's date and outcome (`enrolled` / `excluded:<reason>`); add fully-read dates to `days_done`.
-- Reply with: **Enrolled** table (Lead | Company | Round | Amount | Compliance Tool | Angle), **Excluded** grouped by reason (out of criteria, owned by other rep / customer / deal, already contacted, no email, not B2B), and notes (Apollo credits used, email-domain mismatches, any source that was blocked).
+- Reply with: **Enrolled** table (Lead | Title | Company | Round | Amount | Sequence | Compliance Tool | Angle), **Excluded** grouped by reason (out of criteria, owned by other rep / customer / deal, already contacted, no email, not B2B), and notes (Apollo credits used, email-domain mismatches, any source that was blocked).
