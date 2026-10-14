@@ -1,0 +1,9 @@
+{
+  "name": "comp-prospecting",
+  "version": "0.1.0",
+  "description": "Comp AI prospecting tool: finds YC prospects in the rep's own Sales Navigator (slowly, read-only), verifies YC + fit, enriches with Apollo, scans compliance posture, writes context to HubSpot, and enrolls in the rep's Nooks sequence.",
+  "author": {
+    "name": "Kush Sarin",
+    "email": "kush@trycomp.ai"
+  }
+}

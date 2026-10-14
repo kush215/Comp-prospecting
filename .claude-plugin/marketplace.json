@@ -1,0 +1,14 @@
+{
+  "name": "comp-ai-sales",
+  "owner": {
+    "name": "Comp AI Sales",
+    "email": "kush@trycomp.ai"
+  },
+  "plugins": [
+    {
+      "name": "comp-prospecting",
+      "source": "./",
+      "description": "Paced, per-rep prospecting: Sales Nav → YC/fit check → Apollo → compliance scan → HubSpot → Nooks."
+    }
+  ]
+}
