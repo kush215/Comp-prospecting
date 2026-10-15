@@ -4,11 +4,11 @@
   "rounds_include": ["Pre-Seed", "Seed", "Series A", "Series B", "Series C", "Funding (unspecified)"],
   "rounds_exclude": ["Series D", "Series E", "Series F", "Growth", "Debt", "Credit Facility", "Grant", "Acquisition"],
   "sequences_by_round": {
-    "Pre-Seed": { "name": "Seed Funding V2", "id": "5632c6e8-bada-4978-9234-063bfcbb1879" },
-    "Seed": { "name": "Seed Funding V2", "id": "5632c6e8-bada-4978-9234-063bfcbb1879" },
-    "Series A": { "name": "Series A Funding V2", "id": "0bb5a1b7-7f83-4344-976c-5816ddad5000" },
-    "Series B": { "name": "Series B Funding V2", "id": "fb71dac3-5bde-4ce2-9abc-3c9133aeb2b4" },
-    "Series C": { "name": "Series C funding", "id": "cfd9b9f4-dc78-4314-8eb0-8d9d6dbd6e3c" }
+    "Pre-Seed": { "name": "Seed Funding V2 - AI generated", "id": "897c6c57-4ff2-4943-95a8-9be9a8ce39bc" },
+    "Seed": { "name": "Seed Funding V2 - AI generated", "id": "897c6c57-4ff2-4943-95a8-9be9a8ce39bc" },
+    "Series A": { "name": "Series A Funding V2 - AI Generated", "id": "ab6e1b1c-e406-4ca6-9eb4-8e285a04073f" },
+    "Series B": { "name": "Series B Funding V2 - AI Generated", "id": "b113eb1c-195a-4dfd-abfb-cad47ac44d1b" },
+    "Series C": { "name": "Series C funding - AI Generated", "id": "2a0a21b6-dee8-43c5-a32c-e6288a765fb9" }
   },
   "unspecified_round_by_amount_usd": [
     { "max": 5000000, "round": "Seed" },

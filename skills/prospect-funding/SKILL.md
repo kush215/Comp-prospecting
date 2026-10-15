@@ -61,7 +61,7 @@ Run the scanner and write `compliance_tool` + `compliance_scanner_summary` exact
 
 1. Create HubSpot contacts (≤10 per call) with `hubspot_owner_id = config.hubspot_owner_id`, lifecycle `lead`, email, title, company, website, LinkedIn URL if Apollo has it.
 2. Make sure the scanner fields are on the company HubSpot associated (email domain may differ from the site).
-3. Nooks `syncProspects` → `createSequenceState` with the sequence for the company's **round** (`sequences_by_round[round].id`, e.g. Seed → Seed Funding V2, Series A → Series A Funding V2, Series B → Series B Funding V2, Series C → Series C funding) unless the rep named a different sequence for this run; `owner = config.nooks_user_id`, `enrich: {emails: true, phoneNumbers: true}`. If a sequence id fails, re-resolve it by name with `listSequences` and tell the rep.
+3. Nooks `syncProspects` → `createSequenceState` with the sequence for the company's **round** (`sequences_by_round[round].id`, always the "- AI Generated" versions: Pre-Seed/Seed → Seed Funding V2 - AI generated, Series A → Series A Funding V2 - AI Generated, Series B → Series B Funding V2 - AI Generated, Series C → Series C funding - AI Generated; never the plain non-AI sequences) unless the rep named a different sequence for this run; `owner = config.nooks_user_id`, `enrich: {emails: true, phoneNumbers: true}`. If a sequence id fails, re-resolve it by name with `listSequences` and tell the rep.
 
 ## 7. Report and save state
 
