@@ -93,15 +93,15 @@ Write to the HubSpot **company** (see `references/scanner-to-hubspot.md`):
 
 ## 7. Create, sync, enroll
 
-1. Create HubSpot contacts (≤10 per call): firstname, lastname, email, jobtitle, company, website, hs_linkedin_url, `hubspot_owner_id = config.hubspot_owner_id`, lifecyclestage `lead`.
+1. Create HubSpot contacts (≤10 per call): firstname, lastname, email, jobtitle, company, website, hs_linkedin_url (normalized `https://www.linkedin.com/in/<slug>`), `hubspot_owner_id = config.hubspot_owner_id`, lifecyclestage `lead`. When reusing an existing contact, set its `hs_linkedin_url` too if it's empty.
 2. After contacts exist, make sure each company record (HubSpot auto-creates by email domain) has the scanner fields — if the email domain differs from the site domain, write the fields on the company HubSpot associated.
-3. Nooks `syncProspects` `{type: "hubspot", records: [contact ids]}` → prospect ids.
-4. Nooks `createSequenceState` for each: `sequence` = the sequence chosen for this run (default `config.sequences.yc`), `owner = config.nooks_user_id`, `enrich: {emails: true, phoneNumbers: true}`.
+3. Nooks `syncProspects` `{type: "hubspot", records: [contact ids]}` → prospect ids, then run the **LinkedIn gate** in `references/nooks-linkedin-gate.md`: every prospect must show a `linkedInUrl` in Nooks before it is enrolled, or step 1's connection request silently doesn't send.
+4. Nooks `createSequenceState` only for prospects that passed the gate: `sequence` = the sequence chosen for this run (default `config.sequences.yc`), `owner = config.nooks_user_id`, `enrich: {emails: true, phoneNumbers: true}`.
 
 Only enroll after step 6 is written, so step-1 AI copy has the context.
 
 ## 8. Report and save state
 
 - Update `config.last_page_done = N`.
-- Reply to the rep with: an **Enrolled** table (Lead | Company | YC | Compliance Tool | Angle), an **Excluded** list grouped by reason (owned by other rep / customer / deal, already contacted, no email, not YC, low fit, not a founder), notes (email-domain mismatches, Apollo credits used), and a reminder that Nooks sequence views may need **All Steps** to show advanced prospects.
+- Reply to the rep with: an **Enrolled** table (Lead | Company | YC | Compliance Tool | Angle), an **Excluded** list grouped by reason (owned by other rep / customer / deal, already contacted, no email, no LinkedIn URL, not YC, low fit, not a founder), any connection requests the gate's step 5 flagged, notes (email-domain mismatches, Apollo credits used), and a reminder that Nooks sequence views may need **All Steps** to show advanced prospects.
 - Do not post the report to Slack unless the rep asks.

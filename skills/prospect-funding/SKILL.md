@@ -5,7 +5,7 @@ description: Find recently funded B2B companies from the team's funding sources 
 
 # /prospect-funding
 
-You are running Comp AI's **funding** prospecting play for the rep using this session, on **their own** Chrome, HubSpot, Nooks, Apollo and Slack. Everything you create is owned by that rep. No LinkedIn / Sales Navigator is used in this play.
+You are running Comp AI's **funding** prospecting play for the rep using this session, on **their own** Chrome, HubSpot, Nooks, Apollo and Slack. Everything you create is owned by that rep. No LinkedIn browsing / Sales Navigator is used in this play (LinkedIn URLs come from Apollo).
 
 Comp AI sells compliance automation (SOC 2, ISO 27001, HIPAA, GDPR). Competitors: Vanta, Drata, Delve, Secureframe, Oneleet, Sprinto, Scrut, Probo. Delve was expelled from YC in Apr 2026 over fabricated SOC 2 reports — Delve customers are a strong displacement angle. A fresh round is a trigger: new money → enterprise sales push → security reviews → SOC 2.
 
@@ -59,11 +59,11 @@ Run the scanner and write `compliance_tool` + `compliance_scanner_summary` exact
 
 ## 6. Create, sync, enroll
 
-1. Create HubSpot contacts (≤10 per call) with `hubspot_owner_id = config.hubspot_owner_id`, lifecycle `lead`, email, title, company, website, LinkedIn URL if Apollo has it.
+1. Create HubSpot contacts (≤10 per call) with `hubspot_owner_id = config.hubspot_owner_id`, lifecycle `lead`, email, title, company, website, and `hs_linkedin_url` (always; normalized to `https://www.linkedin.com/in/<slug>`). When reusing an existing contact, set its `hs_linkedin_url` too if it's empty.
 2. Make sure the scanner fields are on the company HubSpot associated (email domain may differ from the site).
-3. Nooks `syncProspects` → `createSequenceState` with the sequence for the company's **round** (`sequences_by_round[round].id`, always the "- AI Generated" versions: Pre-Seed/Seed → Seed Funding V2 - AI generated, Series A → Series A Funding V2 - AI Generated, Series B → Series B Funding V2 - AI Generated, Series C → Series C funding - AI Generated; never the plain non-AI sequences) unless the rep named a different sequence for this run; `owner = config.nooks_user_id`, `enrich: {emails: true, phoneNumbers: true}`. If a sequence id fails, re-resolve it by name with `listSequences` and tell the rep.
+3. Nooks `syncProspects`, then run the **LinkedIn gate** in `../prospect-yc/references/nooks-linkedin-gate.md`: step 1 of every funding sequence is an automatic LinkedIn connection request, and it silently doesn't send if the prospect has no `linkedInUrl` in Nooks at enrollment. Then `createSequenceState`, only for prospects that passed the gate, with the sequence for the company's **round** (`sequences_by_round[round].id`, always the "- AI Generated" versions: Pre-Seed/Seed → Seed Funding V2 - AI generated, Series A → Series A Funding V2 - AI Generated, Series B → Series B Funding V2 - AI Generated, Series C → Series C funding - AI Generated; never the plain non-AI sequences) unless the rep named a different sequence for this run; `owner = config.nooks_user_id`, `enrich: {emails: true, phoneNumbers: true}`. If a sequence id fails, re-resolve it by name with `listSequences` and tell the rep.
 
 ## 7. Report and save state
 
 - Add each processed domain to `funding-seen.json → companies` with today's date and outcome (`enrolled` / `excluded:<reason>`); add fully-read dates to `days_done`.
-- Reply with: **Enrolled** table (Lead | Title | Company | Round | Amount | Sequence | Compliance Tool | Angle), **Excluded** grouped by reason (out of criteria, owned by other rep / customer / deal, already contacted, no email, not B2B), and notes (Apollo credits used, email-domain mismatches, any source that was blocked).
+- Reply with: **Enrolled** table (Lead | Title | Company | Round | Amount | Sequence | Compliance Tool | Angle), **Excluded** grouped by reason (out of criteria, owned by other rep / customer / deal, already contacted, no email, no LinkedIn URL, not B2B), any connection requests the LinkedIn gate flagged, and notes (Apollo credits used, email-domain mismatches, any source that was blocked).
