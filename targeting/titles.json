@@ -8,7 +8,7 @@
     "VP Engineering", "Head of Engineering", "Engineering Manager", "Head of Infrastructure", "DevOps Lead", "Platform Lead",
     "Head of Operations", "VP Operations", "Head of Legal", "General Counsel"
   ],
-  "exclude_title_keywords": ["Intern", "Assistant", "Student", "Advisor", "Board", "Investor", "Former", "Ex-"],
+  "exclude_title_keywords": ["Intern", "Assistant", "Student", "Advisor", "Board", "Investor", "Former", "Ex-", "Head of AI", "Customer Engineering"],
   "max_contacts_per_company": {
     "yc": 4,
     "funding": 5
@@ -16,7 +16,7 @@
   "pick_order": [
     "Every founder / co-founder / CEO",
     "The most senior security or compliance person (CISO, Head of Security, Compliance Manager, GRC, Security Engineer)",
-    "CTO / VP or Head of Engineering",
+    "CTO / VP or Head of Engineering (not Head of AI or Customer Engineering)",
     "IT, operations, legal or finance leads (only if slots remain)"
   ]
 }
