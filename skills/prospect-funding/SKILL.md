@@ -1,6 +1,6 @@
 ---
 name: prospect-funding
-description: Find recently funded B2B companies from the team's funding sources (FinSMEs first), qualify them, find founder/CTO contacts with Apollo, scan compliance posture, write context to HubSpot, and enroll in the rep's funding Nooks sequence. Use when the rep says "prospect funding", "/prospect-funding", "funding this week", or "newly funded companies".
+description: Find recently funded B2B companies from the team's funding sources (Fundup AI feed and FinSMEs), qualify them, find founder/CTO contacts with Apollo, scan compliance posture, write context to HubSpot, and enroll in the rep's funding Nooks sequence. Use when the rep says "scan fundup", "check fundup", "prospect funding", "/prospect-funding", "funding this week", or "newly funded companies".
 ---
 
 # /prospect-funding
@@ -25,13 +25,13 @@ Config and `criteria.json` are defaults; the rep can override per run, e.g. "las
 
 ## 1. Collect announcements
 
-For each source in `sources.json`, follow its section in `references/sources.md`. Build one list of announcements: company, domain, HQ, description, round, amount (USD), lead investors, named CEO/founders, date, article URL. Dedupe by domain across sources.
+**"Prospect funding" (or `/prospect-funding`) always checks every source in `sources.json` — Fundup AI feed and FinSMEs.** Only narrow to one source if the rep says so (e.g. "scan fundup" = Fundup only, "just FinSMEs"). For each source, follow its section in `references/sources.md`. Build one list of announcements: company, domain, HQ, description, round, amount (USD), lead investors, named CEO/founders, date, article URL. Dedupe by domain across sources.
 
 ## 2. Qualify (no CRM calls yet)
 
 Keep a company only if all hold:
 - round type in `rounds_include` and not in `rounds_exclude`
-- amount within `min_amount_usd`–`max_amount_usd` (keep "undisclosed" only if it's otherwise Hot/Strong)
+- amount at least `min_amount_usd` (no maximum; keep "undisclosed" only if it's otherwise Hot/Strong)
 - HQ in `geographies_include` (currently **USA only** — the article's "X-based" city/state must be in the US)
 - fit tier is in `fit_tiers_include`: score **Hot** (`fit_hot`), **Strong** (`fit_strong`), **Medium** (`fit_medium`); drop anything matching `fit_exclude`
 - domain not in `funding-seen.json` within 90 days

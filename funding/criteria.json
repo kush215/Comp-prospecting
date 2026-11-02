@@ -14,16 +14,15 @@
     { "max": 5000000, "round": "Seed" },
     { "max": 25000000, "round": "Series A" },
     { "max": 75000000, "round": "Series B" },
-    { "max": 200000000, "round": "Series C" }
+    { "max": null, "round": "Series C" }
   ],
   "min_amount_usd": 1000000,
-  "max_amount_usd": 200000000,
   "geographies_include": ["USA"],
   "fit_tiers_include": ["Hot", "Strong", "Medium"],
-  "fit_hot": "B2B software selling to enterprise or regulated buyers: fintech, healthtech software, HR/payroll, security, data/AI infrastructure, insurtech, legaltech, govtech",
+  "fit_hot": "B2B software selling to enterprise or regulated buyers: fintech, healthtech software, HR/payroll, security, data/AI infrastructure, insurtech, legaltech, govtech, defense/space/aerospace companies selling to the US government or primes (security reviews, NIST 800-171, CMMC)",
   "fit_strong": "Other B2B SaaS / AI / devtools / vertical software selling to businesses",
   "fit_medium": "B2B companies with a software component that will still face customer security reviews: marketplaces, tech-enabled services, B2B hardware with a cloud/data platform, edtech selling to schools or companies",
-  "fit_exclude": "Biotech, therapeutics, drug discovery, medical devices, pure hardware with no software platform, energy/climate hardware, consumer apps, consumer goods, restaurants, real estate funds, crypto tokens, VC funds, services/agencies with no product",
+  "fit_exclude": "Biotech, therapeutics, drug discovery, medical devices, pure hardware with no software platform and no government/enterprise customers (hardware that sells to the government or runs a software/ops platform is not excluded), energy/climate hardware, consumer apps, consumer goods, restaurants, real estate funds, crypto tokens, VC funds, services/agencies with no product",
   "max_companies_per_run": 15,
   "contacts_per_company": "see targeting/titles.json (shared by all plays)"
 }

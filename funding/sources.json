@@ -2,6 +2,13 @@
   "_comment": "Funding sources read by /prospect-funding. Add more entries as the team finds them; each needs a matching section in skills/prospect-funding/references/sources.md.",
   "sources": [
     {
+      "id": "fundup",
+      "name": "Fundup AI feed",
+      "type": "website_in_browser",
+      "url": "https://fundup.ai/dashboard/feed?tab=funding",
+      "notes": "Logged-in feed; the rep's saved filters (signal window, country, ICP match, etc.) persist on their account, so load the URL as-is and do not change filters. Run on demand throughout the day; funding-seen.json dedupes repeat scans. Cards give company, round, amount, investors, size, industry, a summary and an ICP badge, but no domain or founders."
+    },
+    {
       "id": "finsmes",
       "name": "FinSMEs",
       "type": "website_in_browser",
