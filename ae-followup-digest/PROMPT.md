@@ -45,7 +45,7 @@ Excluded deal stages: Unqualified To Buy (`1955572453`), Duplicate - N/A (`33193
    Only report items actually supported by the logged activity. If none are found, write "No logged action items". Never invent them. Note if an item looks overdue.
 6. Post one message per AE to their channel via `slack_send_message`. Skip AEs with zero flagged deals (post nothing).
    Format: short greeting, count, then per deal:
-   **Deal name** (HubSpot link) | stage | $amount | sourced by X | last touch N days ago
+   **Deal name** (HubSpot link) | stage | $amount | **Sourced by: X** (bold, so the source rep is easy to see) | last touch N days ago
    - Why flagged
    - Prospect action items
    - AE action items
