@@ -39,18 +39,16 @@ Excluded deal stages: Unqualified To Buy (`1955572453`), Duplicate - N/A (`33193
    2. **Nothing scheduled** (no `notes_next_activity_date`) and last contacted 3+ days ago or never
    3. **Going cold**: last contacted 5+ days ago
    Use `notes_last_contacted`, falling back to `notes_last_updated`.
-5. **Action items.** For each flagged deal, read the recent engagements (last ~14 days): `search_crm_objects` for NOTE, EMAIL, CALL, MEETING, TASK with `associatedWith` the deal. Also check open TASKs. Identify:
-   - **Prospect-side** action items (things the prospect said they'd do or owe us: send docs, loop in a stakeholder, get approval, decide by a date)
-   - **AE-side** action items (things we promised: send pricing/contract/security docs, follow-up on a date, intro to someone)
-   Only report items actually supported by the logged activity. If none are found, write "No logged action items". Never invent them. Note if an item looks overdue.
-6. Post one message per AE to their channel via `slack_send_message`. Skip AEs with zero flagged deals (post nothing).
-   Format: short greeting, count, then per deal:
-   **Deal name** (HubSpot link) | stage | $amount | **Sourced by: X** (bold, so the source rep is easy to see) | last touch N days ago
-   - Why flagged
-   - Prospect action items
-   - AE action items
-   - Suggested next step
-   Cap at 10 deals, most urgent first; end with "+N more in HubSpot" if truncated.
+5. **Action items (light touch).** For each flagged deal, skim recent engagements (last ~14 days) only to find a clear open action item on the prospect's side or the AE's side. Only use items supported by logged activity; never invent them. If none, say nothing about action items for that deal.
+6. Post ONE compact message per AE to their channel via `slack_send_message`. Skip AEs with zero flagged deals. Format:
+
+   ```
+   Good morning <first name>, <N> outbound deals to follow up on:
+   1. [Deal name](HubSpot link) | $amount | **Sourced by: X** | last touch Nd ago | <short note, ~12 words max>
+   2. ...
+   ```
+
+   One line per deal. "Sourced by: X" is bold. The note is the open action item and whose court it is ("Prospect owes signature", "You owe revised quote", "Overdue: decision due Nov 5") or, if none, the reason flagged ("Contract sent, quiet 8d"). Omit $amount if empty. No per-deal bullet blocks or suggested-next-step lines. Cap at 10, most urgent first; end with "+N more in HubSpot" if truncated.
 7. Deal link: `https://app.hubspot.com/contacts/243178497/record/0-3/{id}`
 
 ## Rules
