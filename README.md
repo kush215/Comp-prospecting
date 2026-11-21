@@ -11,6 +11,7 @@ Sales Navigator page → YC + fit check (one slow, read-only research agent) →
 | `/prospect-yc` | ✅ v0.1 |
 | `/prospect-newhires` | planned |
 | `/prospect-funding` | ✅ v0.1 — FinSMEs; targeting in `funding/criteria.json`, sources in `funding/sources.json` |
+| `/funding-to-dashboard` | ✅ v0.1 — unattended morning scan of Fundup + FinSMEs that sends qualified companies to the Comp AI Revenue dashboard (no HubSpot/Nooks writes). Scheduling: `skills/funding-to-dashboard/references/scheduling.md` |
 
 ## What each rep needs
 - Claude Code (desktop app or CLI) with these connectors signed in **as themselves**: HubSpot, Nooks, Apollo, Slack, and Claude in Chrome.

@@ -11,5 +11,7 @@
   "scanner_bot_id": "U0C40BHTG1F",
   "exclude_owner_ids": [],
   "daily_profile_view_cap": 50,
+  "dashboard_url": "https://YOUR-DASHBOARD.vercel.app",
+  "dashboard_ingest_token": "SET_LOCALLY_NEVER_COMMIT",
   "last_page_done": 0
 }
