@@ -5,7 +5,7 @@ description: Unattended morning job that runs Comp AI's rules-of-engagement (ROE
 
 # /roe-for-dashboard
 
-The Comp AI Revenue dashboard can't reach HubSpot by itself yet (no private app token), so this skill does its HubSpot work each morning, before the dashboard assigns prospects (8:15am ET). It runs on Kush's computer, usually from a scheduled task with nobody watching.
+The Comp AI Revenue dashboard can't reach HubSpot by itself yet (no private app token), so this skill does its HubSpot work each weekday morning. It runs on Kush's computer, usually from the 8:45am ET scheduled task right after `/funding-to-dashboard`, with nobody watching. The dashboard assigns prospects as soon as step 4's results arrive.
 
 You check facts and report them. **The dashboard decides; you never assign anything, and you never write to HubSpot or Nooks.**
 

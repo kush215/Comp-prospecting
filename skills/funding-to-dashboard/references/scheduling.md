@@ -1,6 +1,6 @@
 # Scheduling the morning funding scan
 
-Run this on **one** computer only (Kush's). The dashboard dedupes by domain, but two machines scanning the same feeds just doubles the browsing for no gain.
+Run this on **one** computer only (Kush's). The dashboard dedupes by domain, but two machines scanning the same feeds just doubles the browsing and the HubSpot lookups for no gain.
 
 ## One-time setup
 
@@ -17,16 +17,16 @@ Run this on **one** computer only (Kush's). The dashboard dedupes by domain, but
 3. Make sure `jq` is installed (`brew install jq`).
 4. Do one supervised run: say **"funding to dashboard"** in the Claude desktop app with Claude in Chrome connected, and approve the Chrome site permissions for `fundup.ai` and `finsmes.com` when asked. Unattended runs can't answer permission prompts, so this step matters.
 
-## The scheduled tasks
+## The scheduled task
 
-In the Claude desktop app, create two scheduled tasks, both in this plugin's folder (so the skills and `funding/*.json` are available). The dashboard assigns prospects at about 8:15am ET; both must finish before then.
+In the Claude desktop app, create **one** scheduled task in this plugin's folder (so the skills and `funding/*.json` are available):
 
-| Time (ET, weekdays) | Prompt | What it does |
-|---|---|---|
-| 7:10am | `Run /funding-to-dashboard.` | Reads Fundup + FinSMEs and sends qualified companies |
-| 7:40am | `Run /roe-for-dashboard.` | Sends closed-lost deals, then runs ROE on everything waiting (including the funding companies from 7:10) through your HubSpot and Nooks connectors |
+- **When:** weekdays only (Monday–Friday), 8:45am Eastern
+- **Prompt:** `Run /funding-to-dashboard, then run /roe-for-dashboard.`
 
-`/roe-for-dashboard` is only needed until the dashboard has its own HubSpot token. Once `HUBSPOT_TOKEN` is set in Vercel, it notices (`mode: internal`) and does nothing, and you can delete that task.
+Running both in one task keeps the order right: the funding companies arrive first, then the ROE check covers them along with closed-lost deals and anything else waiting. When the ROE results reach the dashboard, it assigns that day's prospects right away, so lists are usually ready by about 9:15.
+
+`/roe-for-dashboard` is only needed until the dashboard has its own HubSpot token. Once `HUBSPOT_TOKEN` is set in Vercel, it notices (`mode: internal`) and does nothing; change the prompt to just `Run /funding-to-dashboard.`
 
 ## What has to be true at run time
 
