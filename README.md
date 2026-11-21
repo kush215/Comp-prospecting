@@ -11,6 +11,7 @@ Sales Navigator page → YC + fit check (one slow, read-only research agent) →
 | `/prospect-yc` | ✅ v0.1 |
 | `/prospect-newhires` | planned |
 | `/prospect-funding` | ✅ v0.1 — FinSMEs; targeting in `funding/criteria.json`, sources in `funding/sources.json` |
+| `/roe-for-dashboard` | ✅ v0.1 — unattended ROE checks (HubSpot + Nooks, read-only) and closed-lost deals for the dashboard while it has no HubSpot token |
 | `/funding-to-dashboard` | ✅ v0.1 — unattended morning scan of Fundup + FinSMEs that sends qualified companies to the Comp AI Revenue dashboard (no HubSpot/Nooks writes). Scheduling: `skills/funding-to-dashboard/references/scheduling.md` |
 
 ## What each rep needs

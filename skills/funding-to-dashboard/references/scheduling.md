@@ -17,17 +17,21 @@ Run this on **one** computer only (Kush's). The dashboard dedupes by domain, but
 3. Make sure `jq` is installed (`brew install jq`).
 4. Do one supervised run: say **"funding to dashboard"** in the Claude desktop app with Claude in Chrome connected, and approve the Chrome site permissions for `fundup.ai` and `finsmes.com` when asked. Unattended runs can't answer permission prompts, so this step matters.
 
-## The scheduled task
+## The scheduled tasks
 
-In the Claude desktop app, create a scheduled task:
+In the Claude desktop app, create two scheduled tasks, both in this plugin's folder (so the skills and `funding/*.json` are available). The dashboard assigns prospects at about 8:15am ET; both must finish before then.
 
-- **When:** weekdays, about one hour before the dashboard's daily assignment job (e.g. 7:10am if assignment runs at 8:15am).
-- **Prompt:** `Run /funding-to-dashboard.`
-- **Folder:** this plugin's folder, so the skill and `funding/*.json` are available.
+| Time (ET, weekdays) | Prompt | What it does |
+|---|---|---|
+| 7:10am | `Run /funding-to-dashboard.` | Reads Fundup + FinSMEs and sends qualified companies |
+| 7:40am | `Run /roe-for-dashboard.` | Sends closed-lost deals, then runs ROE on everything waiting (including the funding companies from 7:10) through your HubSpot and Nooks connectors |
+
+`/roe-for-dashboard` is only needed until the dashboard has its own HubSpot token. Once `HUBSPOT_TOKEN` is set in Vercel, it notices (`mode: internal`) and does nothing, and you can delete that task.
 
 ## What has to be true at run time
 
 - The computer is awake, the Claude desktop app is open, and Claude in Chrome is connected.
+- The HubSpot and Nooks connectors are signed in (for `/roe-for-dashboard`).
 - Chrome is signed in to Fundup. If the session has expired, the run reports Fundup as `blocked`, and the dashboard shows a banner until you sign in again.
 - FinSMEs sometimes shows a Cloudflare check. If it does, the run marks FinSMEs as `blocked`; loading finsmes.com once yourself usually clears it.
 
