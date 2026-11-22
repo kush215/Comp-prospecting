@@ -12,7 +12,7 @@ You check facts and report them. **The dashboard decides; you never assign anyth
 ## 0. Setup and guardrails
 
 1. Read `~/.comp-prospecting/config.json`. It needs `dashboard_url` and `dashboard_ingest_token`. If either is missing, stop and say so. Never print the token.
-2. Read `~/.comp-prospecting/roe-state.json` (create `{"closed_lost_backfilled": false, "closed_lost_cursor": null}` if missing).
+2. Read `~/.comp-prospecting/roe-state.json` (create `{"closed_lost_backfilled": false, "closed_lost_cursor": null, "last_run": null}` if missing).
 3. Hard rules:
    - **Read-only.** Use only search/read tools in HubSpot and list/get tools in Nooks. No create, update, enroll, or note tools.
    - **Fail closed.** If any lookup for a domain errors, times out, or returns something you can't interpret, report that domain under `errors`. **Never** report it as eligible. A wrong "eligible" sends a rep to an account someone else is working; a wrong "error" just delays it a day.
@@ -26,22 +26,28 @@ You check facts and report them. **The dashboard decides; you never assign anyth
 
 ## 1. Closed-lost deals → dashboard
 
-The tools map deals to companies one at a time, so closed-lost goes in small daily batches. Two passes, both newest first, `hs_is_closed_lost = true`:
+**The rule:** a deal qualifies if it is **closed lost**, its **opportunity was opened (deal `createdate`) more than 90 days ago**, and its `dealtype` is not `Renewal` or `existingbusiness` (those are churned customers). Blank `dealtype` counts as new business.
 
-- **A. Newly eligible (every run):** `closedate` between 97 and 90 days ago, meaning deals that just aged into the window, with a week of overlap. Cap at 25 deals.
-- **B. Backlog (until `closed_lost_backfilled` is true):** `closedate` between 540 days ago and `closed_lost_cursor` (or 90 days ago if the cursor is null), exclusive of the cursor. Take the newest **25** deals. Afterwards, set `closed_lost_cursor` to the oldest `closedate` you processed. If fewer than 25 came back, the backlog is done: set `closed_lost_backfilled: true`.
+**When it was lost** = `hs_v2_date_entered_current_stage`. Don't use `closedate`: reps often leave it at the expected date, some in 2027.
 
-For each deal, find its company: search companies associated with that deal (one search per deal; properties `name`, `domain`). Skip deals with no company or no domain. Don't look up companies already handled in this run. POST them:
+Let `OPENED_BEFORE` = today minus 90 days. Run three passes in HubSpot deal search, each newest-lost first (sort by `hs_v2_date_entered_current_stage` descending), all with `hs_is_closed_lost = true` and `createdate` ≤ `OPENED_BEFORE`:
+
+- **A. New losses:** lost since `last_run` (or the last 3 days if null). Also read **#feed-sales-lost** (`C0CDV650VPU`) for the same period. Each post names a deal, its ARR, the AE, and sometimes a competitor ("Vanta came up"); "Pipeline cleanup" posts summarize bulk closes without naming every deal. HubSpot is the source of truth for which deals qualify. Use the channel to cross-check, and add its competitor note to `lost_reason` when HubSpot has none. In the report, list deals from the channel that didn't qualify yet because they were opened less than 90 days ago, with the date they will (opened + 90 days).
+- **B. Just turned 90:** `createdate` between today minus 97 days and `OPENED_BEFORE`, lost within the last 365 days. These are recent losses that were too new before and qualify now. Cap at 25.
+- **C. Backlog (until `closed_lost_backfilled` is true):** lost within the last 365 days and before `closed_lost_cursor` (or no upper bound if null). Take the newest **25**, then set `closed_lost_cursor` to the oldest lost date you processed. If fewer than 25 came back, set `closed_lost_backfilled: true`.
+
+For each qualifying deal, find its company: search companies associated with that deal (one search per deal; properties `name`, `domain`). Skip deals with no company or no domain, and companies already handled this run. Never process more than 60 deals in one run. POST them:
 
 ```bash
 curl -sS -X POST "$DASH/api/ingest/closed-lost" -H "$AUTH" -H "Content-Type: application/json" --data-binary @/tmp/closed-lost.json
 ```
 ```json
 { "run_id": "<uuid>", "deals": [
-  { "domain": "acme.io", "name": "Acme", "hubspot_company_id": "123", "deal_id": "456",
-    "deal_name": "Acme - SOC 2", "closedate": "2026-08-01", "amount": 14000, "lost_reason": "Timing" } ] }
+  { "domain": "shortstay.com", "name": "Shortstay", "hubspot_company_id": "123", "deal_id": "456",
+    "deal_name": "Shortstay", "closedate": "2026-11-19", "opened_on": "2026-08-17",
+    "amount": 10999, "lost_reason": "Vanta came up" } ] }
 ```
-Update `roe-state.json` only after a `2xx`. The dashboard dedupes by domain, so resending is harmless. Never process more than 50 deals in one run.
+`closedate` here is the **lost date** (`hs_v2_date_entered_current_stage`), and `opened_on` is the deal's `createdate`. The dashboard rejects any deal whose `opened_on` is missing or less than 90 days ago. After a `2xx`, update `roe-state.json` (`last_run` = now, plus the cursor fields). The dashboard dedupes by domain, so resending is harmless.
 
 ## 2. Fetch what needs checking
 
@@ -91,4 +97,4 @@ If the POST fails, save the file to `~/.comp-prospecting/outbox/roe-<run_id>.jso
 
 ## 5. Report
 
-A short summary: closed-lost deals sent (new vs. already known), domains checked, eligible / blocked / errors, the most common blockers, anything the dashboard rejected, and whether each POST succeeded.
+A short summary: closed-lost deals sent per pass (new vs. already known), channel losses not yet 90 days old with the date each qualifies, domains checked, eligible / blocked / errors, the most common blockers, anything the dashboard rejected, and whether each POST succeeded.
