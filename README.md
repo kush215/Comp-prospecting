@@ -11,6 +11,7 @@ Sales Navigator page → YC + fit check (one slow, read-only research agent) →
 | `/prospect-yc` | ✅ v0.1 |
 | `/prospect-newhires` | planned |
 | `/prospect-funding` | ✅ v0.1 — FinSMEs; targeting in `funding/criteria.json`, sources in `funding/sources.json` |
+| `/enroll-from-dashboard` | ✅ v0.1 — "enroll my queue": carries out the rep's queued enrollments from the dashboard under their own Nooks and HubSpot logins (ROE recheck, HubSpot contact via Nooks, email + phone enrichment, LinkedIn gate, enroll) |
 | `/roe-for-dashboard` | ✅ v0.1 — unattended ROE checks (HubSpot + Nooks, read-only) and closed-lost deals for the dashboard while it has no HubSpot token |
 | `/funding-to-dashboard` | ✅ v0.1 — unattended morning scan of Fundup + FinSMEs that sends qualified companies to the Comp AI Revenue dashboard (no HubSpot/Nooks writes). Scheduling: `skills/funding-to-dashboard/references/scheduling.md` |
 
