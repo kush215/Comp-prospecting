@@ -12,7 +12,7 @@ You check facts and report them. **The dashboard decides; you never assign anyth
 ## 0. Setup and guardrails
 
 1. Read `~/.comp-prospecting/config.json`. It needs `dashboard_url` and `dashboard_ingest_token`. If either is missing, stop and say so. Never print the token.
-2. Read `~/.comp-prospecting/roe-state.json` (create `{"closed_lost_backfilled": false}` if missing).
+2. Read `~/.comp-prospecting/roe-state.json` (create `{"closed_lost_backfilled": false, "closed_lost_cursor": null}` if missing).
 3. Hard rules:
    - **Read-only.** Use only search/read tools in HubSpot and list/get tools in Nooks. No create, update, enroll, or note tools.
    - **Fail closed.** If any lookup for a domain errors, times out, or returns something you can't interpret, report that domain under `errors`. **Never** report it as eligible. A wrong "eligible" sends a rep to an account someone else is working; a wrong "error" just delays it a day.
@@ -26,11 +26,12 @@ You check facts and report them. **The dashboard decides; you never assign anyth
 
 ## 1. Closed-lost deals → dashboard
 
-Search HubSpot deals with `hs_is_closed_lost = true` and `closedate` in a window, newest first:
-- **First run** (`closed_lost_backfilled` is false): `closedate` between 540 and 90 days ago. Page through all of it.
-- **Later runs:** between 97 and 90 days ago (deals that just aged into the window, with a week of overlap).
+The tools map deals to companies one at a time, so closed-lost goes in small daily batches. Two passes, both newest first, `hs_is_closed_lost = true`:
 
-For each deal, get its associated company (`name`, `domain`). Skip deals with no company or no domain. POST them:
+- **A. Newly eligible (every run):** `closedate` between 97 and 90 days ago, meaning deals that just aged into the window, with a week of overlap. Cap at 25 deals.
+- **B. Backlog (until `closed_lost_backfilled` is true):** `closedate` between 540 days ago and `closed_lost_cursor` (or 90 days ago if the cursor is null), exclusive of the cursor. Take the newest **25** deals. Afterwards, set `closed_lost_cursor` to the oldest `closedate` you processed. If fewer than 25 came back, the backlog is done: set `closed_lost_backfilled: true`.
+
+For each deal, find its company: search companies associated with that deal (one search per deal; properties `name`, `domain`). Skip deals with no company or no domain. Don't look up companies already handled in this run. POST them:
 
 ```bash
 curl -sS -X POST "$DASH/api/ingest/closed-lost" -H "$AUTH" -H "Content-Type: application/json" --data-binary @/tmp/closed-lost.json
@@ -40,7 +41,7 @@ curl -sS -X POST "$DASH/api/ingest/closed-lost" -H "$AUTH" -H "Content-Type: app
   { "domain": "acme.io", "name": "Acme", "hubspot_company_id": "123", "deal_id": "456",
     "deal_name": "Acme - SOC 2", "closedate": "2026-08-01", "amount": 14000, "lost_reason": "Timing" } ] }
 ```
-On `2xx` after a first run, set `closed_lost_backfilled: true` in `roe-state.json`. The dashboard dedupes by domain, so resending is harmless.
+Update `roe-state.json` only after a `2xx`. The dashboard dedupes by domain, so resending is harmless. Never process more than 50 deals in one run.
 
 ## 2. Fetch what needs checking
 
@@ -84,7 +85,9 @@ curl -sS -X POST "$DASH/api/roe/results" -H "$AUTH" -H "Content-Type: applicatio
 ```json
 { "run_id": "<uuid>", "results": [ ... ], "errors": [ { "id": 18, "domain": "foo.com", "error": "HubSpot search timed out" } ] }
 ```
-If the POST fails, save the file to `~/.comp-prospecting/outbox/roe-<run_id>.json` and retry it at the start of the next run. Results go stale, so drop outbox files older than 2 days.
+If the POST fails, save the file to `~/.comp-prospecting/outbox/roe-<run_id>.json` and retry it at the start of the next run. Results go stale, so skip outbox files older than 2 days.
+
+**Don't delete outbox files** (unattended runs can't get permission for `rm`). Instead keep `~/.comp-prospecting/outbox/sent.json`, a list of run IDs the dashboard accepted, and skip any outbox file whose run ID is already in it.
 
 ## 5. Report
 

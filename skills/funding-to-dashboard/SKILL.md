@@ -12,7 +12,7 @@ You are running the **sourcing half** of Comp AI's funding play, usually from a 
 1. Read `~/.comp-prospecting/config.json`. It must have `dashboard_url` and `dashboard_ingest_token`. If either is missing, stop and say so (in an unattended run, just end with that message). Never print the token.
 2. Read team settings from the plugin repo: `funding/criteria.json` and `funding/sources.json`.
 3. Read `~/.comp-prospecting/dashboard-sent.json` (create `{"companies": {}}` if missing). It maps domain → date sent. Skip domains sent in the last 90 days.
-4. If `~/.comp-prospecting/outbox/` holds any unsent payload files, retry them first (step 4), oldest first.
+4. If `~/.comp-prospecting/outbox/` holds payload files whose run ID isn't listed in `~/.comp-prospecting/outbox/sent.json`, retry them first (step 4), oldest first.
 5. Hard rules:
    - **Read-only.** In Fundup never change filters and never click Interested / Later / Skip / Add note / Add to list. On FinSMEs don't click subscribe, share, or ad links.
    - One tab you create; close it when done. Don't touch the rep's other tabs. Pause 3–6s between page loads.
@@ -85,7 +85,7 @@ Rules: `domain` is lowercase with no `www.`, scheme, or path. If the same domain
      -H "Content-Type: application/json" \
      --data-binary @"$HOME/.comp-prospecting/outbox/<run.id>.json"
    ```
-3. On `2xx`: delete the outbox file and add each sent domain to `dashboard-sent.json` with today's date. The endpoint is idempotent on `run.id` and `domain`, so a retry never duplicates.
+3. On `2xx`: add the run ID to `~/.comp-prospecting/outbox/sent.json` (a JSON list; create it if missing) and each sent domain to `dashboard-sent.json` with today's date. **Don't delete outbox files**, since unattended runs can't get permission for `rm`; `sent.json` is what marks them done. The endpoint is idempotent on `run.id` and `domain`, so a retry never duplicates.
 4. On any other response or a network error: leave the file in the outbox (the next run retries it) and report the status code. Don't retry in a loop.
 5. **Always send, even if both sources were blocked or empty**, so the dashboard can show "Fundup needs you to sign in" instead of silently showing nothing.
 
