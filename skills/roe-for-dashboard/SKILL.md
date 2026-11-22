@@ -26,14 +26,14 @@ You check facts and report them. **The dashboard decides; you never assign anyth
 
 ## 1. Closed-lost deals → dashboard
 
-**The rule:** a deal qualifies if it is **closed lost**, its **opportunity was opened (deal `createdate`) more than 90 days ago**, and its `dealtype` is not `Renewal` or `existingbusiness` (those are churned customers). Blank `dealtype` counts as new business.
+**The rule:** a deal qualifies if it is **closed lost**, its **opportunity was opened (deal `createdate`) on or before today minus 90 days** (by calendar day in US Eastern time, counting that whole day), and its `dealtype` is not `Renewal` or `existingbusiness` (those are churned customers). Blank `dealtype` counts as new business.
 
 **When it was lost** = `hs_v2_date_entered_current_stage`. Don't use `closedate`: reps often leave it at the expected date, some in 2027.
 
-Let `OPENED_BEFORE` = today minus 90 days. Run three passes in HubSpot deal search, each newest-lost first (sort by `hs_v2_date_entered_current_stage` descending), all with `hs_is_closed_lost = true` and `createdate` ≤ `OPENED_BEFORE`:
+Let `OPENED_BEFORE` = 11:59:59pm Eastern on the date 90 days before today. For example, on Nov 21 that's the end of Aug 23, and on Nov 22 the end of Aug 24. Recompute it on every run; it moves forward one day each day. Run three passes in HubSpot deal search, each newest-lost first (sort by `hs_v2_date_entered_current_stage` descending), all with `hs_is_closed_lost = true` and `createdate` ≤ `OPENED_BEFORE`:
 
 - **A. New losses:** lost since `last_run` (or the last 3 days if null). Also read **#feed-sales-lost** (`C0CDV650VPU`) for the same period. Each post names a deal, its ARR, the AE, and sometimes a competitor ("Vanta came up"); "Pipeline cleanup" posts summarize bulk closes without naming every deal. HubSpot is the source of truth for which deals qualify. Use the channel to cross-check, and add its competitor note to `lost_reason` when HubSpot has none. In the report, list deals from the channel that didn't qualify yet because they were opened less than 90 days ago, with the date they will (opened + 90 days).
-- **B. Just turned 90:** `createdate` between today minus 97 days and `OPENED_BEFORE`, lost within the last 365 days. These are recent losses that were too new before and qualify now. Cap at 25.
+- **B. Just turned 90:** `createdate` between the start of the day 97 days ago (Eastern) and `OPENED_BEFORE`, lost within the last 365 days. These are recent losses that were too new before and qualify now. The extra week covers weekends and any missed runs. Cap at 25.
 - **C. Backlog (until `closed_lost_backfilled` is true):** lost within the last 365 days and before `closed_lost_cursor` (or no upper bound if null). Take the newest **25**, then set `closed_lost_cursor` to the oldest lost date you processed. If fewer than 25 came back, set `closed_lost_backfilled: true`.
 
 For each qualifying deal, find its company: search companies associated with that deal (one search per deal; properties `name`, `domain`). Skip deals with no company or no domain, and companies already handled this run. Never process more than 60 deals in one run. POST them:
@@ -47,7 +47,7 @@ curl -sS -X POST "$DASH/api/ingest/closed-lost" -H "$AUTH" -H "Content-Type: app
     "deal_name": "Shortstay", "closedate": "2026-11-19", "opened_on": "2026-08-17",
     "amount": 10999, "lost_reason": "Vanta came up" } ] }
 ```
-`closedate` here is the **lost date** (`hs_v2_date_entered_current_stage`), and `opened_on` is the deal's `createdate`. The dashboard rejects any deal whose `opened_on` is missing or less than 90 days ago. After a `2xx`, update `roe-state.json` (`last_run` = now, plus the cursor fields). The dashboard dedupes by domain, so resending is harmless.
+`closedate` here is the **lost date** (`hs_v2_date_entered_current_stage`), and `opened_on` is the deal's `createdate`. The dashboard rejects any deal whose `opened_on` is missing or after `OPENED_BEFORE`. After a `2xx`, update `roe-state.json` (`last_run` = now, plus the cursor fields). The dashboard dedupes by domain, so resending is harmless.
 
 ## 2. Fetch what needs checking
 
