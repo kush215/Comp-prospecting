@@ -95,21 +95,23 @@ Pace yourself: at most 40 domains per run (the dashboard sends at most that many
 
 ## 3b. People to target (eligible accounts only)
 
-For every domain you're about to report **eligible**, and for every account in `people_needed` from step 2 (accounts that passed ROE earlier but have no people yet), find **up to 5 people** to target, following `targeting/titles.json` in this repo:
+For every domain you're about to report **eligible**, and for every account in `people_needed` from step 2 (accounts that passed ROE but haven't had a people search yet), find **up to 5 people** to target. Work through these sources **in order**, and stop adding once you have 5. Use `targeting/titles.json` for titles (skip `exclude_title_keywords`).
 
-1. Start with the HubSpot contacts you already fetched in check 2 whose title fits `titles` (skip `exclude_title_keywords`). Send them with `source: "hubspot"`, their `hubspot_contact_id`, and email.
-2. Then search Apollo with `apollo_mixed_people_api_search` (free; it returns no emails): `q_organization_domains_list: ["<domain>"]`, `person_titles` = the `titles` list, `per_page: 25`. Drop titles matching `exclude_title_keywords`. Send these with `source: "apollo"` and `apollo_id`. **Never** call `apollo_people_bulk_match`, `apollo_people_match` or any enrichment; emails are looked up at enrollment time.
-3. Order everyone by `pick_order` (every founder/co-founder/CEO, then the most senior security/compliance person, then CTO/engineering, then IT/ops/legal/finance) and keep the first 5. Include `linkedin_url` (a public `linkedin.com/in/...` profile) whenever you have one.
-4. If check 7 showed a person already in a Nooks sequence, set `nooks_sequence` to its name.
+1. **The lost deal's contacts (closed-lost accounts only; the entry has `dealId`).** Search HubSpot contacts associated with that deal (`associatedWith` deals = `dealId`). These are the people who evaluated us before, so they always go **first**, whatever their title, unless their HubSpot record says they've left. Use `source: "hubspot_deal"` and `note: "Primary contact on lost deal <dealName>"` for the first one (or "Contact on lost deal <dealName>").
+2. **HubSpot contacts on the company.** Contacts associated with the company record(s) from check 1, plus contacts with `hs_email_domain` = the domain (check 2), whose title fits. This catches people whose email domain differs from the website. Use `source: "hubspot"` with `hubspot_contact_id` and email.
+3. **Apollo (free).** `apollo_mixed_people_api_search` with `q_organization_domains_list: ["<domain>"]`, `person_titles` = the titles list, `per_page: 25`. If that finds nobody, try once more with `q_keywords: "<company name>"` instead of the domain, and keep only people whose employer clearly is this company. Use `source: "apollo"` with `apollo_id`. It returns no emails and masks last names; that's fine (they're revealed at enrollment). **Never** call `apollo_people_bulk_match`, `apollo_people_match` or any paid enrichment here.
+4. **The public web (only if you still have fewer than 2).** Read the company's own team, about or leadership page (`WebFetch` on its site) and run a web search such as `"<company name>" (founder OR CEO OR CTO OR "head of security") linkedin`. Keep only people the source shows **currently** in a role at this company, with a public `linkedin.com/in/...` URL when there is one. Use `source: "web"` and `note` = where you found them (e.g., "Company team page"). Never log into, browse or scrape LinkedIn itself; only use public search results and the company's site.
 
-Add them to each eligible result as `"people": [{ "first_name", "last_name", "title", "linkedin_url", "email", "apollo_id", "hubspot_contact_id", "nooks_sequence", "source" }]`. For `people_needed` accounts, POST separately:
+Order the final list: lost-deal contacts first, then by `pick_order` (founders/CEO, the most senior security/compliance person, CTO/engineering, then IT/ops/legal/finance). If check 7 showed someone already in a Nooks sequence, set `nooks_sequence` to its name. If every source comes up empty, send the account with an empty list rather than guessing names.
+
+Add them to each eligible result as `"people": [{ "first_name", "last_name", "title", "linkedin_url", "email", "apollo_id", "hubspot_contact_id", "nooks_sequence", "source", "note" }]`. For `people_needed` accounts, POST separately:
 ```bash
 curl -sS -X POST "$DASH/api/people" "${AUTH[@]}" -H "Content-Type: application/json" --data-binary @"$OUT/people-<run_id>.json"
 ```
 ```json
 { "run_id": "<uuid>", "accounts": [ { "id": 17, "domain": "hoplite.sh", "people": [ ... ] } ] }
 ```
-If Apollo finds nobody, send the account with an empty list rather than guessing names. People never affect eligibility: a person-lookup failure is noted in the report, not treated as an ROE error.
+People never affect eligibility: a person-lookup failure is noted in the report, not treated as an ROE error.
 
 ## 4. Send results
 
@@ -127,4 +129,4 @@ If the POST fails on the Mac, keep the file in `$OUT` and retry it at the start 
 
 ## 5. Report
 
-A short summary: people found (accounts covered, average per account, accounts with none), closed-lost deals sent per pass (new vs. already known), channel losses not yet 90 days old with the date each qualifies, domains checked, eligible / blocked / errors, the most common blockers, anything the dashboard rejected, and whether each POST succeeded.
+A short summary: people found (accounts covered, average per account, how many came from the lost deal / HubSpot / Apollo / the web, accounts with none), closed-lost deals sent per pass (new vs. already known), channel losses not yet 90 days old with the date each qualifies, domains checked, eligible / blocked / errors, the most common blockers, anything the dashboard rejected, and whether each POST succeeded.
