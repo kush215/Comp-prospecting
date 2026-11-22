@@ -58,7 +58,7 @@ The response gives `prospects` (`id`, `domain`, `name`, `hubspot_company_id`), t
 
 ## 3. Check each domain
 
-Run every check below, in order. As soon as a check finds a blocker you may stop checking that domain (it's not eligible either way), but a domain can only be reported **eligible** if you completed **all six**. Track which ones you completed in `checks_completed`.
+Run every check below, in order. As soon as a check finds a blocker you may stop checking that domain (it's not eligible either way), but a domain can only be reported **eligible** if you completed every check in that prospect's `required_checks` (from step 2): the six below for everyone, plus **`geography`** for `closed_lost` prospects. Track which ones you completed in `checks_completed`.
 
 Let `OWNERS` = the owner IDs from step 2, `CUTOFF` = the cutoff date.
 
@@ -67,7 +67,8 @@ Let `OWNERS` = the owner IDs from step 2, `CUTOFF` = the cutoff date.
 3. **`deals`**: for each company record, search deals associated with it (properties: `dealname`, `hs_is_closed`, `hs_is_closed_won`, `closedate`, `cancellation_date`). **Blocker** for each deal whose stage is still open (`hs_is_closed` not `true`, meaning anything other than Closed Won / Closed Lost): `Open deal: <dealname>`. **Blocker** for each deal with `hs_is_closed_won` = `true`, `closedate` within the last 400 days, and no `cancellation_date`: `Closed-won deal: <dealname>`. Closed-lost deals don't block.
 4. **`activity`**: for each company record and up to 50 contacts, search calls, emails, meetings and notes associated with that record where `hubspot_owner_id` is in `OWNERS` and `hs_timestamp` ≥ `CUTOFF`; and tasks associated with it where `hubspot_owner_id` is in `OWNERS` and `hs_createdate` ≥ `CUTOFF`. You may skip calls/emails/meetings/notes for a record whose `notes_last_updated` is empty or before `CUTOFF`, but always check tasks. **Blocker**: `<Owner name> logged a <call|email|meeting|note|task> on <YYYY-MM-DD>`.
 5. **`owner_assignment`**: from the company and contact records already fetched: **Blocker** if `hubspot_owner_id` is in `OWNERS` and `hubspot_owner_assigneddate` ≥ `CUTOFF`: `Company was assigned to <owner name> on <date>` or `A contact was assigned to <owner name> on <date>`.
-6. **`nooks`**: Nooks `listProspects` with `filter_primaryEmail` (up to 10 emails per call, all contacts from check 2) and `include: sequenceStates`. **Blocker** for any active sequence state: `In Nooks sequence <sequence name>`. If there are no contacts, the check is complete with nothing found.
+6. **`geography`** (closed-lost prospects only; closed lost is limited to US companies): use the company record's `country`, `state` and `hs_country_code` from check 1 (fetch them if you didn't). A US country, a US country code, or a US state counts as US. If all are empty, look the domain up in Apollo with `apollo_mixed_companies_search` (no credits) and use its country; don't use a paid enrichment. **Blocker** if the company is outside the US: `Outside the US: <country>`. **Blocker** if you still can't tell: `Country unknown: closed lost is limited to US companies`. Don't guess from the domain ending (`.io`, `.ai` and so on say nothing about location).
+7. **`nooks`**: Nooks `listProspects` with `filter_primaryEmail` (up to 10 emails per call, all contacts from check 2) and `include: sequenceStates`. **Blocker** for any active sequence state: `In Nooks sequence <sequence name>`. If there are no contacts, the check is complete with nothing found.
 
 Record per domain:
 ```json
@@ -79,7 +80,7 @@ Record per domain:
                 "deals": [{"id": "329537978083", "name": "Acme", "closed": true, "won": false}],
                 "activity": [{"type": "call", "id": "428886296280", "owner_id": "168517632", "at": "2026-11-20T22:20:02Z"}] } }
 ```
-`eligible` is `true` only when `blockers` is empty **and** all six checks are in `checks_completed`. The dashboard rejects anything else claiming eligible.
+`eligible` is `true` only when `blockers` is empty **and** every check in the prospect's `required_checks` is in `checks_completed`. The dashboard rejects anything else claiming eligible.
 
 Pace yourself: at most 40 domains per run (the dashboard sends at most that many).
 
