@@ -93,6 +93,24 @@ Record per domain:
 
 Pace yourself: at most 40 domains per run (the dashboard sends at most that many).
 
+## 3b. People to target (eligible accounts only)
+
+For every domain you're about to report **eligible**, and for every account in `people_needed` from step 2 (accounts that passed ROE earlier but have no people yet), find **up to 5 people** to target, following `targeting/titles.json` in this repo:
+
+1. Start with the HubSpot contacts you already fetched in check 2 whose title fits `titles` (skip `exclude_title_keywords`). Send them with `source: "hubspot"`, their `hubspot_contact_id`, and email.
+2. Then search Apollo with `apollo_mixed_people_api_search` (free; it returns no emails): `q_organization_domains_list: ["<domain>"]`, `person_titles` = the `titles` list, `per_page: 25`. Drop titles matching `exclude_title_keywords`. Send these with `source: "apollo"` and `apollo_id`. **Never** call `apollo_people_bulk_match`, `apollo_people_match` or any enrichment; emails are looked up at enrollment time.
+3. Order everyone by `pick_order` (every founder/co-founder/CEO, then the most senior security/compliance person, then CTO/engineering, then IT/ops/legal/finance) and keep the first 5. Include `linkedin_url` (a public `linkedin.com/in/...` profile) whenever you have one.
+4. If check 7 showed a person already in a Nooks sequence, set `nooks_sequence` to its name.
+
+Add them to each eligible result as `"people": [{ "first_name", "last_name", "title", "linkedin_url", "email", "apollo_id", "hubspot_contact_id", "nooks_sequence", "source" }]`. For `people_needed` accounts, POST separately:
+```bash
+curl -sS -X POST "$DASH/api/people" "${AUTH[@]}" -H "Content-Type: application/json" --data-binary @"$OUT/people-<run_id>.json"
+```
+```json
+{ "run_id": "<uuid>", "accounts": [ { "id": 17, "domain": "hoplite.sh", "people": [ ... ] } ] }
+```
+If Apollo finds nobody, send the account with an empty list rather than guessing names. People never affect eligibility: a person-lookup failure is noted in the report, not treated as an ROE error.
+
 ## 4. Send results
 
 Send results only once, after step 3 has finished for every domain from step 2. Never POST an empty or partial results file as a placeholder.
@@ -109,4 +127,4 @@ If the POST fails on the Mac, keep the file in `$OUT` and retry it at the start 
 
 ## 5. Report
 
-A short summary: closed-lost deals sent per pass (new vs. already known), channel losses not yet 90 days old with the date each qualifies, domains checked, eligible / blocked / errors, the most common blockers, anything the dashboard rejected, and whether each POST succeeded.
+A short summary: people found (accounts covered, average per account, accounts with none), closed-lost deals sent per pass (new vs. already known), channel losses not yet 90 days old with the date each qualifies, domains checked, eligible / blocked / errors, the most common blockers, anything the dashboard rejected, and whether each POST succeeded.
