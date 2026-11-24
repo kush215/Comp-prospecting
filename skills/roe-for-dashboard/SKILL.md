@@ -93,6 +93,23 @@ Record per domain:
 
 Pace yourself: at most 40 domains per run (the dashboard sends at most that many).
 
+## 2b. Recheck accounts already assigned
+
+`assigned_recheck` (from step 2) lists every account currently on a rep's list, with `rep`, `rep_owner_id` and `assigned_on`. An account can be assigned to one rep and then worked by another (for example, enrolled in Nooks from outside the dashboard). For each one:
+
+1. HubSpot: any call, email, meeting, note or task associated with the company (or its contacts) since `assigned_on`, owned by one of the **other** owners in `owners` (not `rep_owner_id`).
+2. Nooks: for the account's contacts (by email, `include: sequenceStates`), any **active** sequence state created on or after `assigned_on` by a Nooks user who isn't the assigned rep (resolve the creator with `getUser` and compare emails; the rep's email is `<rep>@trycomp.ai`).
+
+If either finds something, it's a conflict. Report it in one POST at the end (skip the call if there are none):
+```bash
+curl -sS -X POST "$DASH/api/assignments/conflicts" "${AUTH[@]}" -H "Content-Type: application/json" --data-binary @"$OUT/conflicts-<run_id>.json"
+```
+```json
+{ "run_id": "<uuid>", "conflicts": [ { "prospect_id": 31, "domain": "culturebie.com",
+  "reason": "Kush Sarin enrolled 2 contacts in Closed Lost V2 on 2026-11-24" } ] }
+```
+The dashboard takes the account off that rep's list. This is read-only in HubSpot and Nooks; report only what you found, with names and dates.
+
 ## 3b. People to target (eligible accounts only)
 
 For every domain you're about to report **eligible**, and for every account in `people_needed` from step 2 (accounts that passed ROE but haven't had a people search yet), find **up to 5 people** to target. Work through these sources **in order**, and stop adding once you have 5. Use `targeting/titles.json` for titles (skip `exclude_title_keywords`).
@@ -129,4 +146,4 @@ If the POST fails on the Mac, keep the file in `$OUT` and retry it at the start 
 
 ## 5. Report
 
-A short summary: people found (accounts covered, average per account, how many came from the lost deal / HubSpot / Apollo / the web, accounts with none), closed-lost deals sent per pass (new vs. already known), channel losses not yet 90 days old with the date each qualifies, domains checked, eligible / blocked / errors, the most common blockers, anything the dashboard rejected, and whether each POST succeeded.
+A short summary: assigned accounts rechecked and any conflicts released (with reasons), people found (accounts covered, average per account, how many came from the lost deal / HubSpot / Apollo / the web, accounts with none), closed-lost deals sent per pass (new vs. already known), channel losses not yet 90 days old with the date each qualifies, domains checked, eligible / blocked / errors, the most common blockers, anything the dashboard rejected, and whether each POST succeeded.
